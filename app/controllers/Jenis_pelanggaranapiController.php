@@ -124,16 +124,22 @@ class Jenis_pelanggaranapiController extends SecureController{
 			if($this->validated()){
 				$rec_id = $this->rec_id = $db->insert($tablename, $modeldata);
 				if($rec_id){
-					$this->set_flash_msg("Record added successfully", "success");
-					return	$this->redirect("jenis_pelanggaran");
+					$pesan = [
+						'status' => true,
+						'pesan'	 => 'Data Berhasil ditambahkan',
+						'record' => $rec_id
+					];
 				}
 				else{
-					$this->set_page_error();
+					$pesan = [
+						'status' => false,
+						'pesan'	 => 'Data gagal ditambahkan'
+					];
 				}
 			}
 		}
-		$page_title = $this->view->page_title = "Add New Jenis Pelanggaran";
-		$this->render_view("jenis_pelanggaran/add.php");
+		
+		render_json($pesan);
 	}
 	/**
      * Update table record with formdata
@@ -197,7 +203,7 @@ class Jenis_pelanggaranapiController extends SecureController{
 	 * @param $formdata array() from $_POST
      * @return array
      */
-	function editfield($rec_id = null, $formdata = null){
+	function update($rec_id = null, $formdata = null){
 		$db = $this->GetModel();
 		$this->rec_id = $rec_id;
 		$tablename = $this->tablename;
@@ -205,11 +211,7 @@ class Jenis_pelanggaranapiController extends SecureController{
 		$fields = $this->fields = array("id","nama","poin","sanksi");
 		$page_error = null;
 		if($formdata){
-			$postdata = array();
-			$fieldname = $formdata['name'];
-			$fieldvalue = $formdata['value'];
-			$postdata[$fieldname] = $fieldvalue;
-			$postdata = $this->format_request_data($postdata);
+			$postdata = $this->format_request_data($formdata);
 			$this->rules_array = array(
 				'nama' => 'required',
 				'poin' => 'required|numeric',
@@ -227,28 +229,27 @@ class Jenis_pelanggaranapiController extends SecureController{
 				$bool = $db->update($tablename, $modeldata);
 				$numRows = $db->getRowCount();
 				if($bool && $numRows){
-					return render_json(
-						array(
-							'num_rows' =>$numRows,
-							'rec_id' =>$rec_id,
-						)
-					);
+					$pesan = [
+						'status'	=> true,
+						'pesan'		=> 'Berhasil di update',
+						'record'	=> $rec_id
+					];
 				}
 				else{
-					if($db->getLastError()){
-						$page_error = $db->getLastError();
-					}
-					elseif(!$numRows){
-						$page_error = "No record updated";
-					}
-					render_error($page_error);
+					$pesan = [
+						'status'	=> false,
+						'pesan'		=> 'gagal di update'
+					];
 				}
 			}
 			else{
-				render_error($this->view->page_error);
+				$pesan = [
+					'status'	=> false,
+					'pesan'		=> 'Periksa form isian'
+				];
 			}
 		}
-		return null;
+		render_json($pesan);
 	}
 	/**
      * Delete record from the database
@@ -266,12 +267,19 @@ class Jenis_pelanggaranapiController extends SecureController{
 		$db->where("jenis_pelanggaran.id", $arr_rec_id, "in");
 		$bool = $db->delete($tablename);
 		if($bool){
-			$this->set_flash_msg("Record deleted successfully", "success");
+			$pesan = [
+				'status' => true,
+				'pesan'	 => 'Data Berhasil ditambahkan',
+				'record' => $rec_id
+			];
 		}
 		elseif($db->getLastError()){
-			$page_error = $db->getLastError();
-			$this->set_flash_msg($page_error, "danger");
+			$pesan = [
+				'status' => false,
+				'pesan'	 => 'Data Berhasil ditambahkan',
+			];
 		}
-		return	$this->redirect("jenis_pelanggaran");
+		//return	$this->redirect("jenis_pelanggaran");
+		render_json($pesan);
 	}
 }
