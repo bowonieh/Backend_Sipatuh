@@ -71,7 +71,7 @@ class PelanggaranapiController extends SecureController{
      */
 	function add($formdata = null){
 		$responseError = array(
-			"message" => "Tambah data kota terlebih dahulu"
+			"message" => "Tambah data pelanggaran terlebih dahulu"
 		);
 		if($formdata){
 			$db = $this->GetModel();
@@ -101,19 +101,22 @@ class PelanggaranapiController extends SecureController{
 			if($this->validated()){
 				$rec_id = $this->rec_id = $db->insert($tablename, $modeldata);
 				if($rec_id){
-					return render_json(
-						array(
-							'message' => 'Record added succesfully',
-							'rec_id' => $rec_id,
-							'table_name' => $tablename,
-							'model_data' => $modeldata,
-						)
-					);
+					$pesan = [
+						'status'	=> true,
+						'pesan'		=> 'Data berhasil ditambahkan',
+						'rec_id' => $rec_id,
+						'model_data' => $modeldata
+					];
+					
 				}
 				else{
-					$this->set_page_error();
+					$pesan = [
+						'status'	=> false,
+						'pesan'		=> 'Data gagal ditambahkan',
+					];
 				}
 			}
+			render_json($pesan);
 		}
 		echo render_json($responseError);
 	}
