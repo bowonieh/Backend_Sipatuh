@@ -201,18 +201,27 @@ class DashboardapiController extends BaseController{
 			"labels"=> array(),
 			"datasets"=> array(),
 		);
-		
+		/**
+		 * SELECT k.nama AS kelas, COUNT(p.id) AS total 
+		 * FROM pelanggaran p LEFT JOIN siswa s ON p.nis = s.nis 
+		 * LEFT JOIN kelas k ON s.kelas_id = k.id 
+		 * WHERE DATE(tanggal) = DATE(CURRENT_DATE()) GROUP BY kelas
+		 */
 		//set query result for dataset 1
+		/*
 		$sqltext = "Select count(k.nama) as jumlah,k.nama from jenis_pelanggaran k INNER JOIN pelanggaran p ON p.jenis_id = k.id 
 WHERE DATE_FORMAT(p.tanggal,'%Y-%m-%d') = CURRENT_DATE() GROUP BY k.nama";
+		*/
+		$sqltext = "select k.nama as kelas , count(p.id) as total from pelanggaran p inner join siswa s on p.nis = s.nis inner join kelas k on s.kelas_id
+		=k.id WHERE DATE(tanggal) >= DATE(CURRENT_DATE()) GROUP BY kelas";
 		$queryparams = null;
 		
 		// Mengubah format hasil query ke format yang diinginkan
 		$records = $db->rawQuery($sqltext, $queryparams);
 		$output = array_map(function ($record) {
 			return [
-				'nama' => $record['nama'],
-				'total_siswa' => (int) $record['jumlah']
+				'nama' => $record['kelas'],
+				'total_siswa' => (int) $record['total']
 			];
 		}, $records);
 		

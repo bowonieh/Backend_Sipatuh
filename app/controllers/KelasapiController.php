@@ -56,7 +56,7 @@ class KelasapiController extends SecureController{
 			$db->where($fieldname , $fieldvalue); //filter by a single field name
 		}
 		$tc = $db->withTotalCount();
-		$records = $db->get($tablename, $pagination, $fields);
+		$records = $db->get($tablename, '', $fields);
 		render_json($records);
 	}
 	

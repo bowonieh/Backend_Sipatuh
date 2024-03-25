@@ -39,7 +39,7 @@ class GuruApiController extends SecureController{
 			//template to use when ajax search
 		}
 
-		$records = $db->get($tablename, $pagination, $fields);
+		$records = $db->get($tablename, '', $fields);
 
 		if ($db->getLastError()) {
 			$this->set_page_error();
